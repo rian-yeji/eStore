@@ -18,7 +18,7 @@
 			<div class="col-md-6">
 				<h3>${product.name}</h3>
 				<p>${product.description}</p>
-				<p>Manufaturer: ${product.manufacturer}</p>
+				<p>Manufacturer: ${product.manufacturer}</p>
 				<p>Category: ${product.category}</p>
 				<p>${product.price}원</p>
 			</div>
