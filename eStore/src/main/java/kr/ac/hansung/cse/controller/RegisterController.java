@@ -11,6 +11,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import kr.ac.hansung.cse.model.Cart;
 import kr.ac.hansung.cse.model.ShippingAddress;
 import kr.ac.hansung.cse.model.User;
 import kr.ac.hansung.cse.service.UserService;
@@ -57,6 +58,8 @@ public class RegisterController {
 		else
 			user.setAuthority("ROLE_USER");
 		
+		Cart cart = new Cart();
+		user.setCart(cart);
 		userService.addUser(user);
 		
 		return "registerUserSuccess";
