@@ -25,6 +25,10 @@ public class CartItemService {
 		cartItemDao.removeAllCartItems(cart);
 	}
 	
+	public void editQuantity(CartItem cartItem) {
+		cartItemDao.editQuantity(cartItem);
+	}
+	
 	public CartItem getCartItemByProductId(int cartId, int productId) {
 		return cartItemDao.getCartItemByProductId(cartId, productId);
 	}

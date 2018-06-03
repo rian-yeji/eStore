@@ -53,6 +53,32 @@ cartApp.controller("cartCtrl", function($scope, $http) {
 		});
 	};
 
+	$scope.addQuantity = function(productId) {
+		$scope.setCsrfToken();
+		$http({
+			method : 'PUT',
+			url : '/eStore/api/cart/editAdd/' + productId
+		}).then(function successCallbak() {
+			$scope.refreshCart();
+		}, function errorCallback(response) {
+			alert("재고가 남아있지 않습니다.");
+			console.log(response.data);
+		});
+	};
+	
+	$scope.subQuantity = function(productId) {
+		$scope.setCsrfToken();
+		$http({
+			method : 'PUT',
+			url : '/eStore/api/cart/editSub/' + productId
+		}).then(function successCallbak() {
+			$scope.refreshCart();
+		}, function errorCallback(response) {
+			alert("삭제 실패");
+			console.log(response.data);
+		});
+	};
+
 	$scope.calGrandTotal = function() {
 		var grandTotal = 0;
 

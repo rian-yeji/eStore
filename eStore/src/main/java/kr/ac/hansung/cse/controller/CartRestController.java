@@ -3,6 +3,7 @@ package kr.ac.hansung.cse.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -40,7 +41,11 @@ public class CartRestController {
 	@RequestMapping(value = "/{cartId}", method = RequestMethod.GET)
 	public ResponseEntity<Cart> getCartById(@PathVariable(value = "cartId") int cartId) {
 		Cart cart = cartService.getCartById(cartId);
-		return new ResponseEntity<Cart>(cart, HttpStatus.OK);
+		
+		HttpHeaders headers = new HttpHeaders(); 
+		headers.setCacheControl("max-age=10");
+		
+		return new ResponseEntity<Cart>(cart, headers, HttpStatus.OK);
 	}
 
 	@RequestMapping(value = "/{cartId}", method = RequestMethod.DELETE)
@@ -104,6 +109,52 @@ public class CartRestController {
 
 		return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
 
+	}
+	
+	@RequestMapping(value="/editAdd/{productId}", method=RequestMethod.PUT)
+	public ResponseEntity<Void> editAddQuantity (@PathVariable(value="productId") int productId) {
+		
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		
+		String username = authentication.getName();
+		User user = userService.getUserByUserName(username);
+		Cart cart = user.getCart();
+		
+		CartItem cartItem = cartItemService.getCartItemByProductId(cart.getId(), productId);
+		
+		if(cartItem.getQuantity() == cartItem.getProduct().getUnitInStock()) {
+			return new ResponseEntity<Void>(HttpStatus.EXPECTATION_FAILED);
+		}
+		
+		cartItem.setQuantity(cartItem.getQuantity() + 1);
+		cartItem.setTotalPrice(cartItem.getTotalPrice() + cartItem.getProduct().getPrice());
+		cartItemService.editQuantity(cartItem);
+		
+		return new ResponseEntity<Void>(HttpStatus.OK);
+	}
+	
+	@RequestMapping(value="/editSub/{productId}", method=RequestMethod.PUT)
+	public ResponseEntity<Void> editSubQuantity (@PathVariable(value="productId") int productId) {
+		
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		
+		String username = authentication.getName();
+		User user = userService.getUserByUserName(username);
+		Cart cart = user.getCart();
+		
+		CartItem cartItem = cartItemService.getCartItemByProductId(cart.getId(), productId);
+		
+		cartItem.setQuantity(cartItem.getQuantity() - 1);
+		cartItem.setTotalPrice(cartItem.getTotalPrice() - cartItem.getProduct().getPrice());
+		
+		if(cartItem.getQuantity() == 0) {
+			cartItemService.removeCartItem(cartItem);
+		}
+		else {
+			cartItemService.editQuantity(cartItem);
+		}
+		
+		return new ResponseEntity<Void>(HttpStatus.OK);
 	}
 
 }

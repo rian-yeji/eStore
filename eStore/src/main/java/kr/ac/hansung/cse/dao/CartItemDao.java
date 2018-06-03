@@ -40,6 +40,12 @@ public class CartItemDao {
 		}
 	}
 	
+	public void editQuantity (CartItem cartItem) {
+		Session session = sessionFactory.getCurrentSession();
+		session.saveOrUpdate(cartItem);
+		session.flush();
+	}
+	
 	@SuppressWarnings("unchecked")
 	public CartItem getCartItemByProductId(int cartId, int productId) {
 		Session session = sessionFactory.getCurrentSession();
